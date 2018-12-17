@@ -43,7 +43,6 @@ public class StoreBehaviour extends CyclicBehaviour {
                     share ++;
                 }
             }
-            s.doWait(5000);
             if(share >= oldShare) {
                 System.out.println(s.getLocalName()+": "+s.getLocation()+" "+"Market Share: "+share+"/"+s.getCustomers().size());
                 //Improved market share
