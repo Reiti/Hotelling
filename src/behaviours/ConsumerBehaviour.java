@@ -1,12 +1,16 @@
 package behaviours;
 
 import agents.Consumer;
+import agents.World;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class ConsumerBehaviour extends CyclicBehaviour {
     private Consumer c = null;
+
+    private int currentShop = 0;
 
     public ConsumerBehaviour(Consumer c) {
         this.c = c;
@@ -15,7 +19,8 @@ public class ConsumerBehaviour extends CyclicBehaviour {
 
     @Override
     public void action() {
-        ACLMessage rec = c.blockingReceive();
+        MessageTemplate temp = MessageTemplate.MatchSender(new AID("Store"+currentShop, AID.ISLOCALNAME));
+        ACLMessage rec = c.blockingReceive(temp);
         String store = rec.getSender().getLocalName();
         Integer loc = Integer.parseInt(rec.getContent());
 
@@ -36,9 +41,11 @@ public class ConsumerBehaviour extends CyclicBehaviour {
                 msg = new ACLMessage(ACLMessage.REFUSE);
             }
             msg.addReceiver(new AID(store, AID.ISLOCALNAME));
+
             c.send(msg);
         } else { //Here the shop actually decides to move
             c.setLocation(store, loc);
+            currentShop = (currentShop + 1) % World.STORES;
         }
 
 

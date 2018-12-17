@@ -46,22 +46,21 @@ public class StoreBehaviour extends CyclicBehaviour {
             if(share >= oldShare) {
                 System.out.println(s.getLocalName()+": "+s.getLocation()+" "+"Market Share: "+share+"/"+s.getCustomers().size());
                 //Improved market share
-                //Inform customers of move
-                ACLMessage inf = new ACLMessage(ACLMessage.INFORM);
-                inf.setContent(Integer.toString(s.getLocation()));
-                for(String c:s.getCustomers()) {
-                    inf.addReceiver(new AID(c, AID.ISLOCALNAME));
-                }
-                s.send(inf);
+
                 s.setShare(share);
                 break;
             } else {
                 //Else we try again at a different spot
                 s.setLocation(oldLoc);
             }
-
-
         }
+        //Inform customers of move (or not)
+        ACLMessage inf = new ACLMessage(ACLMessage.INFORM);
+        inf.setContent(Integer.toString(s.getLocation()));
+        for(String c:s.getCustomers()) {
+            inf.addReceiver(new AID(c, AID.ISLOCALNAME));
+        }
+        s.send(inf);
     }
 
 }
