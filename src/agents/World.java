@@ -23,11 +23,13 @@ public class World extends Agent {
     public static final int SIZE = 100;
     public static final int STORES = 2;
 
+
     protected void setup() {
         this.doWait(500); //Waiting for Container to start
         initCustomers();
         this.doWait(1000); //Wait for the Customers
         initStores();
+
     }
 
     private void initCustomers() {
@@ -48,7 +50,7 @@ public class World extends Agent {
         for(int i=0; i<STORES; i++) {
             try {
                 String nick = "Store"+Integer.toString(i);
-                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), null);
+                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), new Integer[]{i});
                 c.start();
                 shopControllers.add(c);
                 shops.add(nick);
@@ -65,4 +67,5 @@ public class World extends Agent {
     public List<String> getConsumers() {
         return consumers;
     }
+
 }

@@ -16,30 +16,30 @@ public class ConsumerBehaviour extends CyclicBehaviour {
 
     @Override
     public void action() {
-        //Receive Shop Locations
-        for(String shop: c.getShops()) {
-            ACLMessage rec = c.blockingReceive();
-            String shopName = rec.getSender().getLocalName();
-            String loc = rec.getContent();
-            c.setLocation(shopName, Integer.parseInt(loc));
-        }
-        //Calculate best
-        String nearest = c.getBestShop();
+        ACLMessage rec = c.blockingReceive();
+        String store = rec.getSender().getLocalName();
+        Integer loc = Integer.parseInt(rec.getContent());
 
-
-        //Shop there and tell the others no
-        for(String shop: c.getShops()) {
-            ACLMessage inf = null;
-            if(shop.equals(nearest)) {
-                inf = new ACLMessage(ACLMessage.AGREE);
-
+        if(rec.getPerformative() == ACLMessage.REQUEST) {
+            //Check if customer would shop at this shop (nearest shop atm)
+            int dist = Math.abs(c.getPos() - loc); //Distance to the new location
+            boolean best = true;
+            for(Integer d: c.getLocations().values()) {
+                if(d < dist) {
+                    best = false;
+                }
+            }
+            ACLMessage msg;
+            if(best) { //the new location is nearest
+                msg = new ACLMessage(ACLMessage.AGREE);
             }
             else {
-                inf = new ACLMessage(ACLMessage.REFUSE);
+                msg = new ACLMessage(ACLMessage.REFUSE);
             }
-            inf.addReceiver(new AID(shop, AID.ISLOCALNAME));
-
-            c.send(inf);
+            msg.addReceiver(new AID(store, AID.ISLOCALNAME));
+            c.send(msg);
+        } else {
+            c.setLocation(store, loc);
         }
 
     }

@@ -2,6 +2,8 @@ package agents;
 
 import behaviours.ConsumerBehaviour;
 import jade.core.Agent;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +25,18 @@ public class Consumer extends Agent {
         }
 
         ConsumerBehaviour b = new ConsumerBehaviour(this);
-        addBehaviour(b);
+        addBehaviour(new OneShotBehaviour() {
+            @Override
+            public void action() {
+                for(String s: shops) {
+                    ACLMessage rec = this.myAgent.blockingReceive();
+                    String store = rec.getSender().getLocalName();
+                    Integer location = Integer.parseInt(rec.getContent());
+                    locations.put(store, location);
+                }
+                this.myAgent.addBehaviour(b);
+            }
+        });
     }
 
     public List<String> getShops() {
@@ -34,17 +47,25 @@ public class Consumer extends Agent {
         locations.put(name, loc);
     }
 
-    public String getBestShop() {
-        String best = null;
-        Integer min = World.SIZE;
-        for(String k : locations.keySet()) {
-            Integer curr = Math.abs(locations.get(k) - pos);
-            if(curr < min) {
-                min = curr;
-                best = k;
+    public Map<String, Integer> getLocations() {
+        return locations;
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public Map.Entry<String, Integer> getBestShop() {
+        int best = World.SIZE;
+        Map.Entry<String, Integer> curr = null;
+        for(Map.Entry<String, Integer> en: locations.entrySet()) {
+            int dist = Math.abs(pos - en.getValue());
+            if(dist <= best) {
+                curr = en;
+                best = dist;
             }
         }
 
-        return best;
+        return curr;
     }
 }
