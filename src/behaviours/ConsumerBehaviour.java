@@ -26,12 +26,12 @@ public class ConsumerBehaviour extends CyclicBehaviour {
         Integer loc = Integer.parseInt(rec.getContent());
 
         if(rec.getPerformative() == ACLMessage.REQUEST) { //Here is just a request by the shop to see how many customers would shop
-            System.out.println(store);
             //Check if customer would shop at this shop (nearest shop atm)
             int dist = Math.abs(c.getPos() - loc); //Distance to the new location
             boolean best = true;
             for(Integer d: c.getLocations().values()) {
-                if(d <= dist) {
+                int currdist = Math.abs(c.getPos() - d);
+                if(currdist <= dist) {
                     best = false;
                 }
             }
