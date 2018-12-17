@@ -28,7 +28,7 @@ public class Consumer extends Agent {
         addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
-                for(String s: shops) {
+                for(int i=0; i<shops.size(); i++) {
                     ACLMessage rec = this.myAgent.blockingReceive();
                     String store = rec.getSender().getLocalName();
                     Integer location = Integer.parseInt(rec.getContent());
@@ -53,19 +53,5 @@ public class Consumer extends Agent {
 
     public int getPos() {
         return pos;
-    }
-
-    public Map.Entry<String, Integer> getBestShop() {
-        int best = World.SIZE;
-        Map.Entry<String, Integer> curr = null;
-        for(Map.Entry<String, Integer> en: locations.entrySet()) {
-            int dist = Math.abs(pos - en.getValue());
-            if(dist <= best) {
-                curr = en;
-                best = dist;
-            }
-        }
-
-        return curr;
     }
 }

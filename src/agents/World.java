@@ -7,8 +7,7 @@ import jade.core.Agent;
 import jade.core.Runtime;
 import jade.wrapper.StaleProxyException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class World extends Agent {
 
@@ -19,6 +18,8 @@ public class World extends Agent {
 
     private List<String> consumers = new ArrayList<>();
     private List<String> shops = new ArrayList<>();
+
+    private Map<String, Integer> storeLocations = new HashMap<>();
 
     public static final int SIZE = 100;
     public static final int STORES = 2;
@@ -50,7 +51,9 @@ public class World extends Agent {
         for(int i=0; i<STORES; i++) {
             try {
                 String nick = "Store"+Integer.toString(i);
-                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), new Integer[]{i});
+                Random rnd = new Random();
+                int loc = rnd.nextInt(SIZE);
+                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), new Integer[]{i, loc});
                 c.start();
                 shopControllers.add(c);
                 shops.add(nick);
@@ -58,14 +61,6 @@ public class World extends Agent {
                 e.printStackTrace();
             }
         }
-    }
-
-    public List<String> getShops() {
-        return shops;
-    }
-
-    public List<String> getConsumers() {
-        return consumers;
     }
 
 }

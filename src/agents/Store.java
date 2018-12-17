@@ -19,11 +19,10 @@ public class Store extends Agent {
 
     protected void setup() {
         System.out.println("Store " + getLocalName() + " starting!");
-        Random rnd = new Random();
-        location = rnd.nextInt(World.SIZE);
         System.out.println("Location: " + location);
 
         id = (Integer)getArguments()[0];
+        location = (Integer)getArguments()[1];
 
         for(int i = 0; i< World.SIZE; i++) {
             customers.add("Customer"+Integer.toString(i));

@@ -29,10 +29,12 @@ public class ConsumerBehaviour extends CyclicBehaviour {
             //Check if customer would shop at this shop (nearest shop atm)
             int dist = Math.abs(c.getPos() - loc); //Distance to the new location
             boolean best = true;
-            for(Integer d: c.getLocations().values()) {
+            for(String s: c.getShops()) {
+                int d = c.getLocations().get(s);
                 int currdist = Math.abs(c.getPos() - d);
-                if(currdist <= dist) {
+                if(!s.equals(store) && currdist <= dist) {
                     best = false;
+                    break;
                 }
             }
             ACLMessage msg;

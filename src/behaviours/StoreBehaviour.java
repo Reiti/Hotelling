@@ -10,7 +10,7 @@ public class StoreBehaviour extends CyclicBehaviour {
 
     private Store s;
 
-    private int[] directions = {1, -1};
+    private int[] directions = {-1, 1};
 
     public StoreBehaviour(Store s) {
         this.s = s;
@@ -61,6 +61,7 @@ public class StoreBehaviour extends CyclicBehaviour {
             inf.addReceiver(new AID(c, AID.ISLOCALNAME));
         }
         s.send(inf);
+        //s.doWait(10000);
     }
 
 }
