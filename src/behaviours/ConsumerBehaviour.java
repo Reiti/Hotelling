@@ -19,7 +19,7 @@ public class ConsumerBehaviour extends CyclicBehaviour {
 
     @Override
     public void action() {
-        //Synchronization: Only handle one store at a time 
+        //Synchronization: Only handle one store at a time
         MessageTemplate temp = MessageTemplate.MatchSender(new AID("Store"+currentShop, AID.ISLOCALNAME));
         ACLMessage rec = c.blockingReceive(temp);
         String store = rec.getSender().getLocalName();
