@@ -8,7 +8,6 @@ import jade.lang.acl.ACLMessage;
 public class ConsumerBehaviour extends CyclicBehaviour {
     private Consumer c = null;
 
-
     public ConsumerBehaviour(Consumer c) {
         this.c = c;
     }
@@ -20,12 +19,13 @@ public class ConsumerBehaviour extends CyclicBehaviour {
         String store = rec.getSender().getLocalName();
         Integer loc = Integer.parseInt(rec.getContent());
 
-        if(rec.getPerformative() == ACLMessage.REQUEST) {
+        if(rec.getPerformative() == ACLMessage.REQUEST) { //Here is just a request by the shop to see how many customers would shop
+            System.out.println("Test: "+loc);
             //Check if customer would shop at this shop (nearest shop atm)
             int dist = Math.abs(c.getPos() - loc); //Distance to the new location
             boolean best = true;
             for(Integer d: c.getLocations().values()) {
-                if(d < dist) {
+                if(d <= dist) {
                     best = false;
                 }
             }
@@ -38,9 +38,11 @@ public class ConsumerBehaviour extends CyclicBehaviour {
             }
             msg.addReceiver(new AID(store, AID.ISLOCALNAME));
             c.send(msg);
-        } else {
+        } else { //Here the shop actually decides to move
+            System.out.println("Set: "+loc);
             c.setLocation(store, loc);
         }
+
 
     }
 }
