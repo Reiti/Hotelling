@@ -6,10 +6,11 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class StoreBehaviour extends CyclicBehaviour {
     private final Store s;
 
-    private int[] directions = {-2, -1, 1, 2};
     private int iteration = 0;
 
     public StoreBehaviour(Store s) {
@@ -38,11 +39,29 @@ public class StoreBehaviour extends CyclicBehaviour {
         // Print info in a structured/unstructured way
         if (s.isStructured()) {
             System.out.format("%s,%d,%d,%d%n", s.getLocalName(), iteration, s.getLocation(), share);
+            iteration += 1;
         } else {
             System.out.format("%s - Location: %d Market Share: %d/%d",
                     s.getLocalName(), s.getLocation(), share, customers.length);
         }
         s.setShare(share);
+
+        // Pick strategy for moving
+        int[] directions;
+        switch (s.getStrategy()) {
+            case "Random":
+                directions = new int[]{
+                        ThreadLocalRandom.current().nextInt(-customers.length, -1),
+                        ThreadLocalRandom.current().nextInt(1, customers.length) };
+                break;
+            case "Step1":
+                directions = new int[]{-1, 1};
+                break;
+            case "Step2":
+            default:
+                directions = new int[]{-2, -1, 1, 2};
+                break;
+        }
 
         // Try to move
         for (int dir : directions) {
