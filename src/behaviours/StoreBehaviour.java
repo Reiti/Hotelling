@@ -41,7 +41,7 @@ public class StoreBehaviour extends CyclicBehaviour {
             System.out.format("%s,%d,%d,%d%n", s.getLocalName(), iteration, s.getLocation(), share);
             iteration += 1;
         } else {
-            System.out.format("%s - Location: %d Market Share: %d/%d",
+            System.out.format("%s        - Location: %d Market Share: %d/%d%n",
                     s.getLocalName(), s.getLocation(), share, customers.length);
         }
         s.setShare(share);
@@ -86,7 +86,7 @@ public class StoreBehaviour extends CyclicBehaviour {
 
             if (share > oldShare) {
                 if (!s.isStructured()) {
-                    System.out.format("%s - Location: %d Market Share: %d/%d",
+                    System.out.format("%s moved to location: %d Market Share: %d/%d%n",
                             s.getLocalName(), s.getLocation(), share, customers.length);
                 }
 
