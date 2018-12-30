@@ -17,28 +17,35 @@ public class Consumer extends Agent {
 
     private Map<String, Integer> locations = new HashMap<>();
 
+    private int stores = 0;
     private int pos = 0;
 
     protected void setup() {
-        System.out.println("Consumer " + getLocalName() + " starting.");
-        pos = (Integer)getArguments()[0];
-        for(int i=0; i<World.STORES; i++) {
+        Object[] args = getArguments();
+        stores = (Integer)args[1];
+        pos = (Integer)args[3];
+        int structured = (Integer)args[2];
+
+        if (structured == 0)
+            System.out.println("Consumer " + getLocalName() + " starting.");
+        for(int i = 0; i < stores; i++)
             shops.add("Store"+Integer.toString(i));
-        }
 
         ConsumerBehaviour b = new ConsumerBehaviour(this);
         addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
-                for(int i=0; i<shops.size(); i++) {
+                for(int i = 0; i < shops.size(); i++) {
                     MessageTemplate sender = MessageTemplate.MatchSender(new AID("Store"+i, AID.ISLOCALNAME));
                     MessageTemplate performative = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
                     MessageTemplate template = MessageTemplate.and(sender, performative);
+
                     ACLMessage rec = this.myAgent.blockingReceive(template);
                     String store = rec.getSender().getLocalName();
                     Integer location = Integer.parseInt(rec.getContent());
                     locations.put(store, location);
                 }
+
                 this.myAgent.addBehaviour(b);
             }
         });
@@ -58,5 +65,9 @@ public class Consumer extends Agent {
 
     public int getPos() {
         return pos;
+    }
+
+    public int getNumStores() {
+        return stores;
     }
 }

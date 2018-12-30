@@ -7,17 +7,13 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class StoreBehaviour extends CyclicBehaviour {
+    private final Store s;
 
-    private Store s;
-
-    //private int[] directions = {-2, 1, -1, 2};
-    private int[] directions = {-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8};
-    //private int[] directions = {-1, 1};
+    private int[] directions = {-2, -1, 1, 2};
 
     public StoreBehaviour(Store s) {
         this.s = s;
     }
-
 
     @Override
     public void action() {
@@ -31,7 +27,6 @@ public class StoreBehaviour extends CyclicBehaviour {
         s.send(msg);
 
         // Collect nearest Customers for market share calculation
-        // TODO: This will hang if one of the messages to the customers has been lost
         int share = 0;
         for (AID c : customers) {
             ACLMessage rep = s.blockingReceive();
@@ -55,18 +50,12 @@ public class StoreBehaviour extends CyclicBehaviour {
             s.send(msg);
 
             // Collect nearest Customers
-            // TODO: This will hang if one of the messages to the customers has been lost
             share = 0;
             for (AID c : customers) {
                 ACLMessage rep = s.blockingReceive();
                 if (rep.getPerformative() == ACLMessage.AGREE)
                     share++;
             }
-
-
-            //System.out.println("Store: "+this.myAgent.getLocalName()+"-Direction: "+dir+"-Share:"+share);
-
-            //System.out.format("%s, %d -> %d : %d >= %d %n", s.getLocalName(), oldLoc, s.getLocation(), share, oldShare);
 
             if (share > oldShare) {
                 System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);

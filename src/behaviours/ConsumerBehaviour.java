@@ -16,7 +16,6 @@ public class ConsumerBehaviour extends CyclicBehaviour {
         this.c = c;
     }
 
-
     @Override
     public void action() {
         //Synchronization: Only handle one store at a time
@@ -52,7 +51,7 @@ public class ConsumerBehaviour extends CyclicBehaviour {
             c.send(msg);
         } else { // Here the shop actually decides to move
             c.setLocation(store, loc);
-            currentShop = (currentShop + 1) % World.STORES;
+            currentShop = (currentShop + 1) % c.getNumStores();
         }
     }
 }

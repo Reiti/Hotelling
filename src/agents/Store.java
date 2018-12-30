@@ -9,23 +9,28 @@ import jade.lang.acl.ACLMessage;
 public class Store extends Agent {
     private AID[] customers;
 
+    private int worldSize = 0;
+    private String strategy = "Step2";
+    private int structured = 0;
+
     private int location = 0;
     private int share = 0;
-    private int id = 0;
-
 
     protected void setup() {
-        int worldSize = (Integer)getArguments()[0];
+        Object[] args = getArguments();
+        worldSize = (Integer)args[0];
+        strategy = args[2].toString();
+        structured = (Integer)args[3];
+        location = (Integer)args[5];
+
         customers = new AID[worldSize];
         for (int i = 0; i < worldSize; i++)
             customers[i] = new AID("Customer" + i, AID.ISLOCALNAME);
 
-        id = (Integer)getArguments()[1];
-        location = (Integer)getArguments()[2];
-
-        System.out.println("Store " + getLocalName() + " starting!");
-        System.out.println("Location: " + location);
-
+        if (structured == 0) {
+            System.out.println("Store " + getLocalName() + " starting!");
+            System.out.println("Location: " + location);
+        }
 
         StoreBehaviour b = new StoreBehaviour(this);
         addBehaviour(new OneShotBehaviour() {
@@ -44,7 +49,7 @@ public class Store extends Agent {
 
     public void move(int amount) {
         int n = location + amount;
-        if(n >= 0 && n<World.SIZE) {
+        if(n >= 0 && n < worldSize) {
             location = n;
         }
     }
@@ -69,6 +74,11 @@ public class Store extends Agent {
         this.location = loc;
     }
 
+    public boolean isStructured() {
+        return structured == 1;
+    }
 
-
+    public String getStrategy() {
+        return strategy;
+    }
 }
