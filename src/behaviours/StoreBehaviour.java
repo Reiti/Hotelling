@@ -10,6 +10,7 @@ public class StoreBehaviour extends CyclicBehaviour {
     private final Store s;
 
     private int[] directions = {-2, -1, 1, 2};
+    private int iteration = 0;
 
     public StoreBehaviour(Store s) {
         this.s = s;
@@ -33,7 +34,14 @@ public class StoreBehaviour extends CyclicBehaviour {
             if (rep.getPerformative() == ACLMessage.AGREE)
                 share++;
         }
-        System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);
+
+        // Print info in a structured/unstructured way
+        if (s.isStructured()) {
+            System.out.format("%s,%d,%d,%d%n", s.getLocalName(), iteration, s.getLocation(), share);
+        } else {
+            System.out.format("%s - Location: %d Market Share: %d/%d",
+                    s.getLocalName(), s.getLocation(), share, customers.length);
+        }
         s.setShare(share);
 
         // Try to move
@@ -58,9 +66,12 @@ public class StoreBehaviour extends CyclicBehaviour {
             }
 
             if (share > oldShare) {
-                System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);
-                //Improved market share
+                if (!s.isStructured()) {
+                    System.out.format("%s - Location: %d Market Share: %d/%d",
+                            s.getLocalName(), s.getLocation(), share, customers.length);
+                }
 
+                //Improved market share
                 s.setShare(share);
                 break;
             } else {
