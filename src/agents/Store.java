@@ -6,11 +6,8 @@ import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
-import java.util.*;
-
 public class Store extends Agent {
-
-    private List<String> customers = new ArrayList<>();
+    private AID[] customers;
 
     private int location = 0;
     private int share = 0;
@@ -18,15 +15,16 @@ public class Store extends Agent {
 
 
     protected void setup() {
+        int worldSize = (Integer)getArguments()[0];
+        customers = new AID[worldSize];
+        for (int i = 0; i < worldSize; i++)
+            customers[i] = new AID("Customer" + i, AID.ISLOCALNAME);
+
+        id = (Integer)getArguments()[1];
+        location = (Integer)getArguments()[2];
+
         System.out.println("Store " + getLocalName() + " starting!");
         System.out.println("Location: " + location);
-
-        id = (Integer)getArguments()[0];
-        location = (Integer)getArguments()[1];
-
-        for(int i = 0; i< World.SIZE; i++) {
-            customers.add("Customer"+Integer.toString(i));
-        }
 
 
         StoreBehaviour b = new StoreBehaviour(this);
@@ -35,9 +33,8 @@ public class Store extends Agent {
             public void action() {
                 ACLMessage init = new ACLMessage(ACLMessage.INFORM);
                 init.setContent(Integer.toString(getLocation()));
-                for(String c: customers) {
-                    init.addReceiver(new AID(c, AID.ISLOCALNAME));
-                }
+                for (AID c : customers)
+                    init.addReceiver(c);
                 this.myAgent.send(init);
 
                 this.myAgent.addBehaviour(b);
@@ -64,7 +61,7 @@ public class Store extends Agent {
         return share;
     }
 
-    public List<String> getCustomers() {
+    public AID[] getCustomers() {
         return customers;
     }
 

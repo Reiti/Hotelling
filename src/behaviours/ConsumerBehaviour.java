@@ -7,8 +7,9 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+
 public class ConsumerBehaviour extends CyclicBehaviour {
-    private Consumer c = null;
+    private final Consumer c;
 
     private int currentShop = 0;
 
@@ -25,33 +26,34 @@ public class ConsumerBehaviour extends CyclicBehaviour {
         String store = rec.getSender().getLocalName();
         Integer loc = Integer.parseInt(rec.getContent());
 
-        if(rec.getPerformative() == ACLMessage.REQUEST) { //Here is just a request by the shop to see how many customers would shop
-            //Check if customer would shop at this shop (nearest shop atm)
-            int dist = Math.abs(c.getPos() - loc); //Distance to the new location
+        if(rec.getPerformative() == ACLMessage.REQUEST) { // Here is just a request by the shop to see how many customers would shop
+            // Check if customer would shop at this shop (nearest shop atm)
+            int newDist = Math.abs(c.getPos() - loc);
             boolean best = true;
+
             for(String s: c.getShops()) {
-                int d = c.getLocations().get(s);
-                int currdist = Math.abs(c.getPos() - d);
-                if(!s.equals(store) && currdist <= dist) {
+                Integer d = c.getLocations().get(s);
+                if (d == null) {
+                    System.out.format("WTF: %s%n", s);
+                    continue;
+                }
+                int currDist = Math.abs(c.getPos() - d);
+
+                if (!s.equals(store) && currDist <= newDist) {
                     best = false;
                     break;
                 }
             }
-            ACLMessage msg;
-            if(best) { //the new location is nearest
-                msg = new ACLMessage(ACLMessage.AGREE);
-            }
-            else {
-                msg = new ACLMessage(ACLMessage.REFUSE);
-            }
-            msg.addReceiver(new AID(store, AID.ISLOCALNAME));
 
+            ACLMessage msg = rec.createReply();
+            if(best) // The new location is nearest
+                msg.setPerformative(ACLMessage.AGREE);
+            else
+                msg.setPerformative(ACLMessage.REFUSE);
             c.send(msg);
-        } else { //Here the shop actually decides to move
+        } else { // Here the shop actually decides to move
             c.setLocation(store, loc);
             currentShop = (currentShop + 1) % World.STORES;
         }
-
-
     }
 }

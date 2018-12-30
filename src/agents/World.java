@@ -8,6 +8,7 @@ import jade.core.Runtime;
 import jade.wrapper.StaleProxyException;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class World extends Agent {
 
@@ -28,6 +29,7 @@ public class World extends Agent {
     protected void setup() {
         this.doWait(500); //Waiting for Container to start
         initCustomers();
+        // TODO: Waiting here is IMPORTANT. Any way to handle this gracefully?
         this.doWait(1000); //Wait for the Customers
         initStores();
 
@@ -51,9 +53,9 @@ public class World extends Agent {
         for(int i=0; i<STORES; i++) {
             try {
                 String nick = "Store"+Integer.toString(i);
-                Random rnd = new Random();
+                ThreadLocalRandom rnd = ThreadLocalRandom.current();
                 int loc = rnd.nextInt(SIZE);
-                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), new Integer[]{i, loc});
+                AgentController c = container.createNewAgent(nick, Store.class.getCanonicalName(), new Integer[]{SIZE, i, loc});
                 c.start();
                 shopControllers.add(c);
                 shops.add(nick);

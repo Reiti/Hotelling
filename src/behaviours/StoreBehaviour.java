@@ -10,7 +10,9 @@ public class StoreBehaviour extends CyclicBehaviour {
 
     private Store s;
 
-    private int[] directions = {-1, 1};
+    //private int[] directions = {-2, 1, -1, 2};
+    private int[] directions = {-2, -1, 1, 2};
+    //private int[] directions = {-1, 1};
 
     public StoreBehaviour(Store s) {
         this.s = s;
@@ -19,32 +21,52 @@ public class StoreBehaviour extends CyclicBehaviour {
 
     @Override
     public void action() {
-        for(int dir: directions) {
+        AID[] customers = s.getCustomers();
 
+        // Send Location to Customers (to check whether market share has changed)
+        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+        for (AID c : customers)
+            msg.addReceiver(c);
+        msg.setContent(Integer.toString(s.getLocation()));
+        s.send(msg);
+
+        // Collect nearest Customers for market share calculation
+        // TODO: This will hang if one of the messages to the customers has been lost
+        int share = 0;
+        for (AID c : customers) {
+            ACLMessage rep = s.blockingReceive();
+            if (rep.getPerformative() == ACLMessage.AGREE)
+                share++;
+        }
+        System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);
+        s.setShare(share);
+
+        // Try to move
+        for (int dir : directions) {
             int oldLoc = s.getLocation();
             int oldShare = s.getShare();
-
             s.move(dir);
 
-
-
-            //Send Location to Customers
-            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-            for (String c : s.getCustomers()) {
-                msg.addReceiver(new AID(c, AID.ISLOCALNAME));
-            }
+            // Send Location to Customers
+            msg = new ACLMessage(ACLMessage.REQUEST);
+            for (AID c : customers)
+                msg.addReceiver(c);
             msg.setContent(Integer.toString(s.getLocation()));
             s.send(msg);
-            //Collect nearest Customers
-            int share = 0;
-            for (String c : s.getCustomers()) {
+
+            // Collect nearest Customers
+            // TODO: This will hang if one of the messages to the customers has been lost
+            share = 0;
+            for (AID c : customers) {
                 ACLMessage rep = s.blockingReceive();
-                if (rep.getPerformative() == ACLMessage.AGREE) {
-                    share ++;
-                }
+                if (rep.getPerformative() == ACLMessage.AGREE)
+                    share++;
             }
-            if(share >= oldShare) {
-                System.out.println(s.getLocalName()+": "+s.getLocation()+" "+"Market Share: "+share+"/"+s.getCustomers().size());
+
+            //System.out.format("%s, %d -> %d : %d >= %d %n", s.getLocalName(), oldLoc, s.getLocation(), share, oldShare);
+
+            if (share >= oldShare) {
+                System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);
                 //Improved market share
 
                 s.setShare(share);
@@ -54,14 +76,12 @@ public class StoreBehaviour extends CyclicBehaviour {
                 s.setLocation(oldLoc);
             }
         }
-        //Inform customers of move (or not)
+
+        // Inform customers of move (or not)
         ACLMessage inf = new ACLMessage(ACLMessage.INFORM);
         inf.setContent(Integer.toString(s.getLocation()));
-        for(String c:s.getCustomers()) {
-            inf.addReceiver(new AID(c, AID.ISLOCALNAME));
-        }
+        for (AID c : customers)
+            inf.addReceiver(c);
         s.send(inf);
-        //s.doWait(10000);
     }
-
 }
