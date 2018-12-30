@@ -7,7 +7,6 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-
 public class ConsumerBehaviour extends CyclicBehaviour {
     private final Consumer c;
 
@@ -34,11 +33,11 @@ public class ConsumerBehaviour extends CyclicBehaviour {
             for(String s: c.getShops()) {
                 Integer d = c.getLocations().get(s);
                 if (d == null) {
-                    System.out.format("WTF: %s%n", s);
+                    System.out.format("WTF: %s", s);
                     continue;
                 }
-                int currDist = Math.abs(c.getPos() - d);
 
+                int currDist = Math.abs(c.getPos() - d);
                 if (!s.equals(store) && currDist <= newDist) {
                     best = false;
                     break;

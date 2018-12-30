@@ -1,9 +1,11 @@
 package agents;
 
 import behaviours.ConsumerBehaviour;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +31,10 @@ public class Consumer extends Agent {
             @Override
             public void action() {
                 for(int i=0; i<shops.size(); i++) {
-                    ACLMessage rec = this.myAgent.blockingReceive();
+                    MessageTemplate sender = MessageTemplate.MatchSender(new AID("Store"+i, AID.ISLOCALNAME));
+                    MessageTemplate performative = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+                    MessageTemplate template = MessageTemplate.and(sender, performative);
+                    ACLMessage rec = this.myAgent.blockingReceive(template);
                     String store = rec.getSender().getLocalName();
                     Integer location = Integer.parseInt(rec.getContent());
                     locations.put(store, location);
