@@ -20,7 +20,7 @@ public class World extends Agent {
         int size = args.length > 0 ? Integer.parseInt(args[0].toString()) : 100;
         int stores = args.length > 1 ? Integer.parseInt(args[1].toString()) : 2;
         String strategy = args.length > 2 ? args[2].toString() : "Step2";
-        int structured = args.length > 2 && args[3].toString().equals("structured") ? 1 : 0;
+        int structured = args.length > 3 && args[3].toString().equals("structured") ? 1 : 0;
 
         // Wait for container to start
         this.doWait(500);
