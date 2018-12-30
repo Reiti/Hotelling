@@ -63,9 +63,12 @@ public class StoreBehaviour extends CyclicBehaviour {
                     share++;
             }
 
+
+            //System.out.println("Store: "+this.myAgent.getLocalName()+"-Direction: "+dir+"-Share:"+share);
+
             //System.out.format("%s, %d -> %d : %d >= %d %n", s.getLocalName(), oldLoc, s.getLocation(), share, oldShare);
 
-            if (share >= oldShare) {
+            if (share > oldShare) {
                 System.out.println(s.getLocalName() + ": " + s.getLocation() + " " + "Market Share: " + share + "/" + customers.length);
                 //Improved market share
 

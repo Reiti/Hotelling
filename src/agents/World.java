@@ -23,7 +23,7 @@ public class World extends Agent {
     private Map<String, Integer> storeLocations = new HashMap<>();
 
     public static final int SIZE = 100;
-    public static final int STORES = 2;
+    public static final int STORES = 3;
 
 
     protected void setup() {
